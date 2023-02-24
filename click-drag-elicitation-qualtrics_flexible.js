@@ -1,8 +1,9 @@
 /*
-This code is an adaption of the belief elicitation click and drag code of Paolo Crosetto and Thomas De Haan programmed by Ismael Benslimane.
+This code is an adaption of the belief elicitation click and drag code of Paolo Crosetto and Thomas De Haan programmed by Ismaël Benslimane.
+=> https://github.com/beliefelicitation/qualtrics
 All credits for this amazing script go to them!
 
-This code only adapts the x-axis to by dynamic
+This code only adapts the x-axis to be more flexible regarding the units/ticks.
 */
 
 $( document ).ready(function() {
@@ -26,7 +27,10 @@ $( document ).ready(function() {
             DistributionResult:params.distribution_result,
             DistributionYData:params.distribution_ydata,
             DistributionXData:params.distribution_xdata,
-            DistributionHistory:params.distribution_history
+            DistributionHistory:params.distribution_history,
+            xticks: Number(params.xticks),
+            geqyes: Number(params.geqyes),
+            decimyes: Number(params.decimyes)
         }
 
         let history = [];
@@ -47,7 +51,10 @@ $( document ).ready(function() {
         let min_tick;
         let max_tick;
 
-
+        xticks = js_vars.xticks;
+        geqyes = js_vars.geqyes;
+        decimyes = js_vars.decimyes;
+        
         nb_bins = js_vars.nb_bins;
         min_tick = js_vars.min;
         step_tick = js_vars.step;
@@ -547,17 +554,48 @@ $( document ).ready(function() {
                     labels: {
                         formatter: function() {
                             let tick = min_tick + this.value * (nb_bins - 1) * step_tick;
-                                if (tick == min_tick) {
-                                    return '\u2266' + Number(tick) + ' ' + js_vars.xUnit;
-                                } else if (tick == max_tick) {
-                                    return '\u2267' + Number(tick) + ' ' + js_vars.xUnit;
+                                if (geqyes == 1) {
+                                    if (decimyes == 1) {
+                                        if (tick >= 1000) {
+                                            if (tick == min_tick) {
+                                                return '\u2266' + Number((tick / 1000).toFixed(2)) + 'k ' + js_vars.xUnit;
+                                            } else if (tick == max_tick) {
+                                                return '\u2267' + Number((tick / 1000).toFixed(2)) + 'k ' + js_vars.xUnit;
+                                            } else {
+                                                return Number((tick / 1000).toFixed(2)) + 'k ' + js_vars.xUnit;
+                                            }
+                                        } else {
+                                            if (tick == min_tick) {
+                                                return '\u2266' + Number(tick.toFixed(2)) + ' ' + js_vars.xUnit;
+                                            } else if (tick == max_tick) {
+                                                return '\u2267' + Number(tick.toFixed(2)) + ' ' + js_vars.xUnit;
+                                            } else {
+                                                return Number(tick.toFixed(2)) + ' ' + js_vars.xUnit;
+                                            }
+                                        }
+                                    } else {
+                                        if (tick == min_tick) {
+                                            return '\u2266' + Number(tick) + ' ' + js_vars.xUnit;
+                                        } else if (tick == max_tick) {
+                                            return '\u2267' + Number(tick) + ' ' + js_vars.xUnit;
+                                        } else {
+                                            return Number(tick) + ' ' + js_vars.xUnit;
+                                        }
+                                    }  
                                 } else {
-                                    return Number(tick) + ' ' + js_vars.xUnit;
+                                    if (decimyes == 1) {
+                                        if (tick >= 1000) {
+                                            return Number((tick / 1000).toFixed(2)) + 'k ' + js_vars.xUnit;
+                                        } else {
+                                            return Number((tick).toFixed(2)) + ' ' + js_vars.xUnit;
+                                        }
+                                    } else {
+                                       return Number(tick) + ' ' + js_vars.xUnit; 
+                                    } 
                                 }
-                            
                         },
 
-                        step: 4,
+                        step: xticks,
 
                         style: {
                             fontSize: '9px'
